@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <title>Undo</title>
+    </head>
+    <body>
+        
+        <textarea id="editorUndo" placeholder="Digite seu texto/Palavra" rows="3" cols="40"></textarea>
+        <br><br>
+
+        <button id="salvar">Salvar</button>
+        <button id="undo">Desfazer</button>
+
+        <p id="statusTexto" aria-live="polite"></p>
+
+        <section id="stackView" aria-label="Visualização da pilha" aria-live="polite">
+            <strong>Pilha des estados:</strong>
+            <div id="pilhaCont">[vazia]</div>
+        </section>
+
+        <script>
+            const pilha = [];
+            const editorUndo = document.getElementById("editorUndo");
+            const salvar = document.getElementById("salvar");
+            const undo = document.getElementById("undo");
+            const statusTexto = document.getElementById("statusTexto");
+            const pilhaCont = document.getElementById("pilhaCont");
+
+            function atualizar(){
+                undo.disabled = pilha.length === 0;
+                if(pilha.length === 0){
+                    pilhaCont.textContent = '[vazia]';
+
+                }else{
+                    pilhaCont.innerHTML = pilha.map((s, i) => `<div>${i+1}: ${s}</div>`).join('');
+                }
+            }
+
+            salvar.addEventListener('click', () => {
+                const textoAtual = editorUndo.value;
+                const topo = pilha[pilha.length - 1];
+
+                if(topo !== textoAtual){
+                    pilha.push(textoAtual);
+                    statusTexto.textContent = 'Alteração salva com sucesso';
+                
+                }else{
+                    statusTexto.textContent = 'Esse texto é igual ao anterior';
+                }
+          
+            atualizar();  
+        });
+
+        undo.addEventListener('click', () => {
+            if(pilha.length === 0){
+                statusTexto.textContent = 'Não tem mais nada para ser desfeito';
+                return;
+            }
+
+            pilha.pop();
+            
+            if(pilha.length === 0){
+                editorUndo.value = '';
+                statusTexto.textContent = 'Ação desfeita. Pilha vazia!'
+            }else{
+                editorUndo.value = pilha[pilha.length - 1];
+                statusTexto.textContent = 'Ação desfeita. De volta ao último item salvo';
+            }
+
+            atualizar();
+
+        });
+
+        </script>
+
+    </body>
+</html>

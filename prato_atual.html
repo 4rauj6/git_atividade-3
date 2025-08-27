@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <title>Pesquise seu prato</title>
+    </head>
+    <body>
+
+        <style>
+
+            h1{
+
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+            }
+
+            .pilhaTela{
+
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+            }
+
+            .pilhaCont{
+
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+            }
+
+        </style>
+        
+
+        <div class="h1">
+
+            <h1>Pesquise sua prato</h1>
+
+        </div>
+        
+        <input id="editorPrato" placeholder="Pesquisa seu prato aqui!"></input>
+        <br><br>
+
+        <button id="salvar">Buscar</button>
+        <button id="undo">Remover</button>
+
+        <p id="statusTexto" aria-live="polite"></p>
+
+        <div class="pilhaTela">
+            <section id="stackView" aria-label="Visualização da pilha" aria-live="polite">
+            
+                <strong>Suas buscas:</strong>
+                <div id="pilhaCont">A pilha está vazia</div>
+        
+            </section>
+        </div>
+
+        <script>
+            
+            const pilha = [];
+            const editorPrato = document.getElementById("editorPrato");
+            const salvar = document.getElementById("salvar");
+            const undo = document.getElementById("undo");
+            const statusTexto = document.getElementById("statusTexto");
+            const pilhaCont = document.getElementById("pilhaCont");
+
+            function atualizar(){
+                undo.disabled = pilha.length === 0;
+                if(pilha.length === 0){
+                    pilhaCont.textContent = '[vazia]';
+
+                }else{
+                    pilhaCont.innerHTML = pilha.map((s, i) => `<div>${i+1}: ${s}</div>`).join('');
+                }
+            }
+
+            salvar.addEventListener('click', () => {
+                const textoAtual = editorPrato.value;
+                const topo = pilha[pilha.length - 1];
+
+                if(topo !== textoAtual){
+                    pilha.push(textoAtual);
+                    statusTexto.textContent = 'Alteração salva com sucesso';
+                
+                }else{
+                    statusTexto.textContent = 'Esse texto é igual ao anterior';
+                }
+          
+            atualizar();  
+        });
+
+        undo.addEventListener('click', () => {
+            if(pilha.length === 0){
+                statusTexto.textContent = 'Não tem mais nada para ser desfeito';
+                return;
+            }
+
+            pilha.pop();
+            
+            if(pilha.length === 0){
+                editorPrato.value = '';
+                statusTexto.textContent = 'Ação desfeita. Pilha vazia!'
+            }else{
+                editorPrato.value = pilha[pilha.length - 1];
+                statusTexto.textContent = 'Ação desfeita. De volta ao último item salvo';
+            }
+
+            atualizar();
+
+        });
+
+        </script>
+    </body>
+</html>
